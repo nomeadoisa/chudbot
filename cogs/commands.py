@@ -5,7 +5,7 @@ import random
 import datetime
 import psutil
 import os
-from db import Database
+from .db import Database
 
 role_id = 1466979676139557082 
 threshold = 70
