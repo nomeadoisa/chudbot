@@ -18,7 +18,7 @@ class MineView(discord.ui.View):
         self.stage = stage
 
     async def on_timeout(self):
-        active_miners.discard(self.user.id)
+        active_miners.pop(self.user.id, None)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.user.id:
@@ -28,9 +28,9 @@ class MineView(discord.ui.View):
 
     @discord.ui.button(label="Cash Out", style=discord.ButtonStyle.green)
     async def cash_out(self, interaction: discord.Interaction, button: discord.ui.Button):
-        active_miners.discard(self.user.id)
+        active_miners.pop(self.user.id, None)
         new_bal = db.update_balance(self.user.id, self.winnings)
-        db.update_mine_funds(-self.winnings) # Mine pays out
+        db.update_mine_funds(-self.winnings) 
         await interaction.response.edit_message(content=f"You safely left the mine with **{self.winnings} Chuds**.\nYour new balance is **{new_bal}**.", view=None)
         self.stop()
 
@@ -53,9 +53,9 @@ class MineView(discord.ui.View):
                 msg = f" **AWESOME!!!!** You struck a huge vein! You currently have **{new_winnings} Chuds**.\nDo you cash out, or risk it all on a Double or Nothing?"
                 await interaction.edit_original_response(content=msg, view=next_view)
             elif self.stage == 4:
-                active_miners.discard(self.user.id)
+                active_miners.pop(self.user.id, None)
                 new_bal = db.update_balance(self.user.id, new_winnings)
-                db.update_mine_funds(-new_winnings) # Mine pays out the jackpot
+                db.update_mine_funds(-new_winnings) 
                 msg = f"**AMAZING!!!!** You beat the impossible odds and survived the deepest depths!\nYou won **{new_winnings} Chuds** and your new balance is **{new_bal}**."
                 await interaction.edit_original_response(content=msg, view=None)
             else:
@@ -63,7 +63,7 @@ class MineView(discord.ui.View):
                 msg = f"**Great!** You found more valuables! You currently have **{new_winnings} Chuds**.\nKeep going? The caves are getting unstable..."
                 await interaction.edit_original_response(content=msg, view=next_view)
         else:
-            active_miners.discard(self.user.id)
+            active_miners.pop(self.user.id, None)
             await interaction.edit_original_response(content=f"**THE WEST HAS FALLEN.** You got greedy and were buried. You lost **{self.bet} Chuds**.", view=None)
 
 
@@ -136,7 +136,7 @@ class MiningCommands(commands.Cog):
                 view=view
             )
         else:
-            active_miners.discard(interaction.user.id)
+            active_miners.pop(interaction.user.id, None)
             await interaction.edit_original_response(content=f"**Epic Fail.** You hit a dead end immediately and lost your **{bet} Chuds**.")
 
 async def setup(bot):

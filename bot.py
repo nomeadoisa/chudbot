@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-LOG_CHANNEL_ID = 1547619122056007720  # Replace with your channel ID
+LOG_CHANNEL_ID = 1547619122056007720 
 
 class ChudBot(commands.Bot):
     def __init__(self):
@@ -17,6 +17,7 @@ class ChudBot(commands.Bot):
 
     async def on_ready(self):
         print(f'Logged in as {self.user}')
+        await self.tree.sync()
         channel = self.get_channel(LOG_CHANNEL_ID)
         if channel:
             await channel.send("Chudbot is online. Hello.")
