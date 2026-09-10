@@ -10,7 +10,28 @@ class Database:
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS ratings (user_id INTEGER PRIMARY KEY, date TEXT, score INTEGER)''')
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, balance INTEGER DEFAULT 0, xp INTEGER DEFAULT 0, tier INTEGER DEFAULT 1)''')
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS daily_claims (user_id INTEGER PRIMARY KEY, last_claim TEXT)''')
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS server_economy (mine_funds INTEGER)''')
+        
+        self.cursor.execute('SELECT mine_funds FROM server_economy')
+        if not self.cursor.fetchone():
+            self.cursor.execute('INSERT INTO server_economy (mine_funds) VALUES (10000)')
+            
         self.conn.commit()
+
+    def get_mine_funds(self):
+        self.cursor.execute('SELECT mine_funds FROM server_economy')
+        return self.cursor.fetchone()[0]
+
+    def update_mine_funds(self, amount: int):
+        current_funds = self.get_mine_funds()
+        new_funds = current_funds + amount
+        
+        if new_funds < 5000:
+            new_funds = 5000
+            
+        self.cursor.execute('UPDATE server_economy SET mine_funds = ?', (new_funds,))
+        self.conn.commit()
+        return new_funds
 
     def check_and_claim_daily(self, user_id: int, today: str):
         self.cursor.execute('SELECT last_claim FROM daily_claims WHERE user_id = ?', (user_id,))

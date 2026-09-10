@@ -5,19 +5,32 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD_ID = 871616135542489128
+LOG_CHANNEL_ID = 1547619122056007720  # Replace with your channel ID
 
 class ChudBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="!", intents=discord.Intents.all())
+        super().__init__(command_prefix="!", intents=discord.Intents.default())
 
     async def setup_hook(self):
         await self.load_extension('cogs.commands')
-        
-        guild = discord.Object(id=GUILD_ID)
-        self.tree.copy_global_to(guild=guild)
-        await self.tree.sync(guild=guild)
-        print(f"Logged in as {self.user} and synced commands!")
+        await self.load_extension('cogs.mining')
+
+    async def on_ready(self):
+        print(f'Logged in as {self.user}')
+        channel = self.get_channel(LOG_CHANNEL_ID)
+        if channel:
+            await channel.send("Chudbot is online. Hello.")
+
+    async def close(self):
+        channel = self.get_channel(LOG_CHANNEL_ID)
+        if channel:
+            await channel.send("Chudbot is going away for a while. I hope I see you again.")
+
+        mining_cog = self.get_cog('MiningCommands')
+        if mining_cog:
+            await mining_cog.cancel_active_mines()
+
+        await super().close()
 
 bot = ChudBot()
 bot.run(TOKEN)
