@@ -50,8 +50,8 @@ class ChudCommands(commands.Cog):
         
         response_msg = f"The Chudometer determines that {target.mention} is **{score}%** chuddy today."
 
-        if score >= CHUD_THRESHOLD:
-            role = interaction.guild.get_role(CHUD_ROLE_ID)
+        if score >= threshold:
+            role = interaction.guild.get_role(role_id)
             if role:
                 try:
                     await target.add_roles(role)
@@ -84,7 +84,7 @@ class ChudCommands(commands.Cog):
         self.cursor.execute('DELETE FROM ratings WHERE user_id = ?', (target.id,))
         self.conn.commit()
         
-        role = interaction.guild.get_role(CHUD_ROLE_ID)
+        role = interaction.guild.get_role(role_id)
         msg = f"{target.mention}'s chud status has been completely cleared for today."
         
         if role and role in target.roles:
