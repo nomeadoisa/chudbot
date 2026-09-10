@@ -17,7 +17,15 @@ class ChudBot(commands.Bot):
 
     async def on_ready(self):
         print(f'Logged in as {self.user}')
+        
+        MY_SERVER = discord.Object(id=871616135542489128) 
+
+        self.tree.clear_commands(guild=None)
         await self.tree.sync()
+        
+        self.tree.copy_global_to(guild=MY_SERVER)
+        await self.tree.sync(guild=MY_SERVER)
+        
         channel = self.get_channel(LOG_CHANNEL_ID)
         if channel:
             await channel.send("Chudbot is online. Hello.")
