@@ -7,7 +7,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 LOG_CHANNEL_ID = 1547619122056007720 
 
-ENABLE_LOGGING = False
+ENABLE_LOGGING = True
 
 class ChudBot(commands.Bot):
     def __init__(self):
@@ -16,6 +16,7 @@ class ChudBot(commands.Bot):
     async def setup_hook(self):
         await self.load_extension('cogs.commands')
         await self.load_extension('cogs.mining')
+        await self.load_extension('cogs.fishing')
 
     async def on_ready(self):
         print(f'Logged in as {self.user}')
