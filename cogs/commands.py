@@ -72,7 +72,9 @@ class ChudCommands(commands.Cog):
 
         leaderboard = "**Today's Top Chuds**\n"
         for rank, (user_id, score) in enumerate(todays_scores, start=1):
-            leaderboard += f"{rank}. <@{user_id}> - **{score}%**\n"
+            member = interaction.guild.get_member(user_id)
+            name = member.display_name if member else f"User {user_id}"
+            leaderboard += f"{rank}. {name} - **{score}%**\n"
 
         await interaction.response.send_message(leaderboard)
 
