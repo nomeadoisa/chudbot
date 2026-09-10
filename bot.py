@@ -7,6 +7,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 LOG_CHANNEL_ID = 1547619122056007720 
 
+ENABLE_LOGGING = False
+
 class ChudBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.default())
@@ -20,20 +22,25 @@ class ChudBot(commands.Bot):
         
         MY_SERVER = discord.Object(id=871616135542489128) 
 
+        self.tree.copy_global_to(guild=MY_SERVER)
+        await self.tree.sync(guild=MY_SERVER)
+
         self.tree.clear_commands(guild=None)
         await self.tree.sync()
         
         self.tree.copy_global_to(guild=MY_SERVER)
         await self.tree.sync(guild=MY_SERVER)
         
-        channel = self.get_channel(LOG_CHANNEL_ID)
-        if channel:
-            await channel.send("Chudbot is online. Hello.")
+        if ENABLE_LOGGING:
+            channel = self.get_channel(LOG_CHANNEL_ID)
+            if channel:
+                await channel.send("Chudbot is online. Hello.")
 
     async def close(self):
-        channel = self.get_channel(LOG_CHANNEL_ID)
-        if channel:
-            await channel.send("Chudbot is going away for a while. I hope I see you again.")
+        if ENABLE_LOGGING:
+            channel = self.get_channel(LOG_CHANNEL_ID)
+            if channel:
+                await channel.send("Chudbot is going away for a while. I hope I see you again.")
 
         mining_cog = self.get_cog('MiningCommands')
         if mining_cog:
